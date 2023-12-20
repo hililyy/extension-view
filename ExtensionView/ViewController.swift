@@ -9,77 +9,103 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    private let contentScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        return scrollView
+    }()
+    
+    let scrollContentsView = UIView()
+    
     private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [headerView, topLabel, botLabel, threeHeaderView, footerLabel])
+        let stackView = UIStackView(arrangedSubviews: [headerView, emptyView, topLabel, botLabel])
         stackView.axis = .vertical
         stackView.spacing = 0
         return stackView
     }()
     
-    let headerView: HeaderView = {
-        let view = HeaderView()
-        view.label.text = "Header"
+    let headerView: UIButton = {
+        let view = UIButton()
+        view.setTitle("Header", for: .normal)
         view.backgroundColor = .red
+        view.addTarget(self, action: #selector(btnTap), for: .touchUpInside)
         return view
     }()
     
-    let topLabel: contentsView = {
-        let label = contentsView()
+    let emptyView = ContentsView()
+    
+    let topLabel: ContentsView = {
+        let label = ContentsView()
         label.label.text = "첫 번째 문장 첫 번째 문장 첫 번째 문장 첫 번째 문장 첫 번째 문장 첫 번째 문장 첫 번째 문장 첫 번째 문장 첫 번째 문장 첫 번째 문장 첫 번째 문장"
         label.backgroundColor = .blue
         return label
     }()
     
-    let botLabel: contentsView = {
-        let label = contentsView()
-        label.label.text = "세 번째 문장 세 번째 문장 세 번째 문장 세 번째 문장 세 번째 문장 세 번째 문장 세 번째 문장 세 번째 문장 세 번째 문장 세 번째 문장 세 번째 문장"
+    let botLabel: ContentsView = {
+        let label = ContentsView()
+        label.label.text = "세 번째 문장 세 번째 문장 세 번째 문장 세 번째 문장"
         label.backgroundColor = .purple
         return label
     }()
     
-    let threeHeaderView: HeaderView = {
-        let view = HeaderView()
-        view.label.text = "Three"
-        view.backgroundColor = .systemPink
-        return view
-    }()
-    
-    let footerLabel: HeaderView = {
-        let view = HeaderView()
-        view.label.text = "Footer"
-        view.backgroundColor = .gray
-        return view
-    }()
+    let contentsView = UIView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        stackView.setCustomSpacing(8.0, after: topLabel)
-        stackView.setCustomSpacing(8.0, after: botLabel)
         
-        let btn = UIButton(type: .system)
-        btn.setTitle("Animate", for: [])
-        btn.addTarget(self, action: #selector(btnTap(_:)), for: .touchUpInside)
+        contentsView.backgroundColor = .yellow
         
-        [stackView, btn].forEach { v in
-            
-            v.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(v)
-            
-            NSLayoutConstraint.activate([
-                v.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20.0),
-                v.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20.0),
-            ])
-        }
+        let label = UILabel()
+        label.text = String(repeating: "@@@@@@@@@@@@@@", count: 100)
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        contentsView.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
+        topLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentScrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollContentsView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(contentScrollView)
+        contentScrollView.addSubview(scrollContentsView)
+        scrollContentsView.addSubview(stackView)
+        scrollContentsView.addSubview(contentsView)
+        contentsView.addSubview(label)
         
         NSLayoutConstraint.activate([
+            contentScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            contentScrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            contentScrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            contentScrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20.0),
+            scrollContentsView.topAnchor.constraint(equalTo: contentScrollView.topAnchor),
+            scrollContentsView.leadingAnchor.constraint(equalTo: contentScrollView.leadingAnchor),
+            scrollContentsView.trailingAnchor.constraint(equalTo: contentScrollView.trailingAnchor),
+            scrollContentsView.bottomAnchor.constraint(equalTo: contentScrollView.bottomAnchor),
+            scrollContentsView.widthAnchor.constraint(equalTo: contentScrollView.widthAnchor),
             
-            // put button near bottom
-            btn.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40.0),
+            stackView.topAnchor.constraint(equalTo: scrollContentsView.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: scrollContentsView.trailingAnchor),
+
+            contentsView.topAnchor.constraint(equalTo: stackView.bottomAnchor),
+            contentsView.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor),
+            contentsView.trailingAnchor.constraint(equalTo: scrollContentsView.trailingAnchor),
+            contentsView.bottomAnchor.constraint(equalTo: scrollContentsView.bottomAnchor),
             
+            label.topAnchor.constraint(equalTo: contentsView.topAnchor),
+            label.leadingAnchor.constraint(equalTo: contentsView.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: contentsView.trailingAnchor),
+            label.bottomAnchor.constraint(equalTo: contentsView.bottomAnchor)
         ])
+        scrollContentsView.heightAnchor.constraint(equalTo: contentScrollView.heightAnchor).priority = .init(UILayoutPriority.defaultHigh.rawValue)
         
+        topLabel.alpha = 1
+        botLabel.alpha = 1
+        
+        topLabel.isHidden = true
+        botLabel.isHidden = true
     }
     
     @objc func btnTap(_ sender: UIButton) {
@@ -96,36 +122,7 @@ class ViewController: UIViewController {
     }
 }
 
-class HeaderView: UIView {
-    let label = UILabel()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-    
-    func commonInit() {
-        label.textAlignment = .center
-        self.addSubview(label)
-        
-        label.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: topAnchor, constant: 10.0),
-            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10.0),
-            label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 10.0),
-            label.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 10.0),
-            label.heightAnchor.constraint(equalToConstant: 50)
-        ])
-    }
-}
-
-class contentsView: UIView {
+class ContentsView: UIView {
     
     let label = UILabel()
     
@@ -155,9 +152,7 @@ class contentsView: UIView {
         c.priority = .required - 1
         c.isActive = true
         
-        
         label.setContentCompressionResistancePriority(.required, for: .vertical)
-        
         
         self.clipsToBounds = true
     }
